@@ -1,0 +1,5 @@
+Hi
+
+<% @experiments.each do |id, experiment| %>
+  <a href="/experiments/<%= id %>"><%= experiment.name %></a>
+<% end %>

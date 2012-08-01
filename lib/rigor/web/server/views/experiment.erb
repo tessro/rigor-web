@@ -1,0 +1,30 @@
+<h2><%= @experiment.name %></h2>
+
+<table>
+  <% @experiment.treatments.each do |treatment| %>
+    <tr class="treatment">
+      <td class="name"><%= treatment.name %></td>
+      <td class="sample"><%= treatment.size %></td>
+    </tr>
+  <% end %>
+</table>
+
+<% [:visit].each do |event| %>
+  <div class="event">
+    <h3 class="name"><%= event %></h3>
+    <table>
+      <tr>
+        <td>Treatment</td>
+        <td>Avg</td>
+        <td>%</td>
+      </tr>
+      <% @experiment.treatments.each do |treatment| %>
+        <tr class="treatment">
+          <td class="name"><%= treatment.name %></td>
+          <td class="total-pct"><%= "%0.1f" % (treatment.total_events(event) / treatment.size.to_f) %></td>
+          <td class="unique-pct"><%= "%0.1f" % (100 * treatment.unique_events(event) / treatment.size.to_f) %>%</td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+<% end %>
