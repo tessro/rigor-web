@@ -1,30 +1,43 @@
-<h2><%= @experiment.name %></h2>
+<h1><%= @experiment.name %></h1>
 
-<table>
-  <% @experiment.treatments.each do |treatment| %>
-    <tr class="treatment">
-      <td class="name"><%= treatment.name %></td>
-      <td class="sample"><%= treatment.size %></td>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Treatment</th>
+      <th>N</th>
     </tr>
-  <% end %>
+  </thead>
+  <tbody>
+    <% @experiment.treatments.each do |treatment| %>
+      <tr class="treatment">
+        <td class="name"><%= treatment.name %></td>
+        <td class="sample"><%= treatment.size %></td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
+<h2>Events</h2>
 <% [:visit].each do |event| %>
   <div class="event">
     <h3 class="name"><%= event %></h3>
-    <table>
-      <tr>
-        <td>Treatment</td>
-        <td>Avg</td>
-        <td>%</td>
-      </tr>
-      <% @experiment.treatments.each do |treatment| %>
-        <tr class="treatment">
-          <td class="name"><%= treatment.name %></td>
-          <td class="total-pct"><%= "%0.1f" % (treatment.total_events(event) / treatment.size.to_f) %></td>
-          <td class="unique-pct"><%= "%0.1f" % (100 * treatment.unique_events(event) / treatment.size.to_f) %>%</td>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Treatment</th>
+          <th>Avg</th>
+          <th>%</th>
         </tr>
-      <% end %>
+      </thead>
+      <tbody>
+        <% @experiment.treatments.each do |treatment| %>
+          <tr class="treatment">
+            <td class="name"><%= treatment.name %></td>
+            <td class="total-pct"><%= "%0.1f" % (treatment.total_events(event) / treatment.size.to_f) %></td>
+            <td class="unique-pct"><%= "%0.1f" % (100 * treatment.unique_events(event) / treatment.size.to_f) %>%</td>
+          </tr>
+        <% end %>
+      </tbody>
     </table>
   </div>
 <% end %>

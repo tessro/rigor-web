@@ -3,11 +3,21 @@
   <head>
     <title>Rigor</title>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/css/application.css" />
     <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/bootstrap.js"></script>
     <script type="text/javascript" src="/js/d3.v2.js"></script>
   </head>
   <body>
-    <%= yield %>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">Rigor</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <%= yield %>
+    </div>
   </body>
 </html>

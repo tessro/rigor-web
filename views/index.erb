@@ -1,5 +1,22 @@
-Hi
+<h1>Experiments</h1>
 
-<% @experiments.each do |id, experiment| %>
-  <a href="/experiments/<%= id %>"><%= experiment.name %></a>
-<% end %>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Experiment</th>
+      <th>N</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @experiments.each do |id, experiment| %>
+      <tr>
+        <td>
+          <a href="/experiments/<%= id %>"><%= experiment.name %></a>
+        </td>
+        <td>
+          <%= experiment.treatments.map(&:size).reduce(&:+) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
