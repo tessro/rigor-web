@@ -21,6 +21,7 @@
 <% [:visit].each do |event| %>
   <div class="event">
     <h3 class="name"><%= event %></h3>
+    <div class="chart"></div>
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
@@ -40,4 +41,121 @@
       </tbody>
     </table>
   </div>
+  <style type="text/css">
+    .chart {
+      font-size: 11px;
+      margin-top: -4px;
+    }
+
+    path.line {
+      fill: none;
+      stroke-width: 2px;
+      opacity: 0.8;
+    }
+
+    path.area {
+      opacity: 0.2;
+    }
+
+    .axis {
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis line {
+      stroke: #fff;
+    }
+
+    .x.axis .minor {
+      stroke-opacity: .5;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+
+    .y.axis line, .y.axis path {
+      fill: none;
+      stroke: #000;
+    }
+  </style>
+  <script type="text/javascript">
+    var treatments = <%= JSON.dump(@experiment.treatments.map { |t| {:name => t.name, :data => t.event_distribution(event)} }) %>;
+    var m = [5, 40, 20, 5],
+        w = 480 - m[1] - m[3],
+        h = 122 - m[0] - m[2];
+
+    // Scales and axes. Note the inverted domain for the y-scale: bigger is up!
+    var x = d3.scale.linear().range([0, w]),
+        y = d3.scale.linear().range([h, 0]),
+        xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true),
+        yAxis = d3.svg.axis().scale(y).ticks(4).orient("right");
+
+    // An area generator, for the light fill.
+    var area = d3.svg.area()
+        .interpolate("monotone")
+        .x(function(d, i) { return x(i); })
+        .y0(h)
+        .y1(function(d) { return y(d); });
+
+    // A line generator, for the dark stroke.
+    var line = d3.svg.line()
+        .interpolate("monotone")
+        .x(function(d, i) { return x(i); })
+        .y(function(d) { return y(d); });
+
+    // Compute the minimum and maximum date, and the maximum price.
+    x.domain([0, treatments[0].data.length]);
+    y.domain([0, d3.max(treatments[0].data)]).nice();
+
+    // Add an SVG element with the desired dimensions and margin.
+    var svg = d3.select(".chart").append("svg:svg")
+        .attr("width", w + m[1] + m[3])
+        .attr("height", h + m[0] + m[2])
+      .append("svg:g")
+        .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+    // Add the clip path.
+    svg.append("svg:clipPath")
+        .attr("id", "clip")
+      .append("svg:rect")
+        .attr("width", w)
+        .attr("height", h);
+
+    var colors = d3.scale.category10().range();
+
+    for (var i = 0; i < treatments.length; i++) {
+      // Filter to one symbol; the S&P 500.
+      var values = treatments[i].data;
+      values.push(0);
+      values.push(0);
+      values.push(0);
+      values.push(0);
+
+      // Add the area path.
+      svg.append("svg:path")
+          .attr("class", "area")
+          .attr("fill", colors[i])
+          .attr("clip-path", "url(#clip)")
+          .attr("d", area(values));
+
+      // Add the line path.
+      svg.append("svg:path")
+          .attr("class", "line")
+          .attr("stroke", colors[i])
+          .attr("clip-path", "url(#clip)")
+          .attr("d", line(values));
+    }
+
+    // Add the x-axis.
+    svg.append("svg:g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + h + ")")
+        .call(xAxis);
+
+    // Add the y-axis.
+    svg.append("svg:g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + w + ",0)")
+        .call(yAxis);
+  </script>
 <% end %>

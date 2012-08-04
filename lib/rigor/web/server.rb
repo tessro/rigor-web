@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'rigor'
+require 'json'
 
 module Rigor::Web
   class Server < Sinatra::Base
