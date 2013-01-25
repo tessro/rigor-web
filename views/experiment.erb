@@ -26,16 +26,22 @@
       <thead>
         <tr>
           <th>Treatment</th>
-          <th>Avg</th>
-          <th>%</th>
+          <th class="stat">&mu;</th>
+          <th class="stat">&sigma;</th>
+          <th class="stat">%<sub>subjects</sub></th>
+          <th class="stat">z<sub>&mu;</sub></th>
+          <th class="stat">z<sub>%</sub></th>
         </tr>
       </thead>
       <tbody>
         <% @experiment.treatments.each do |treatment| %>
           <tr class="treatment">
             <td class="name"><%= treatment.name %></td>
-            <td class="total-pct"><%= "%0.1f" % (treatment.total_events(event) / treatment.size.to_f) %></td>
-            <td class="unique-pct"><%= "%0.1f" % (100 * treatment.unique_events(event) / treatment.size.to_f) %>%</td>
+            <td class="stat mean"><%= "%0.1f" % treatment.mean(event) %></td>
+            <td class="stat stddev"><%= "%0.1f" % treatment.stddev(event) %></td>
+            <td class="stat unique-pct"><%= "%0.1f" % (100 * treatment.unique_events(event) / treatment.size.to_f) %>%</td>
+            <td class="stat z-score <%= "negative" if treatment.z_value(event, @experiment.control) < 0 %> <%= "significant" if treatment.significant?(event, @experiment.control) %>"><%= "%0.1f" % treatment.z_value(event, @experiment.control) %></td>
+            <td class="stat z-score <%= "negative" if treatment.unique_z_value(event, @experiment.control) < 0 %> <%= "significant" if treatment.unique_significant?(event, @experiment.control) %>"><%= "%0.1f" % treatment.unique_z_value(event, @experiment.control) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -81,7 +87,7 @@
   <script type="text/javascript">
     var treatments = <%= JSON.dump(@experiment.treatments.map { |t| {:name => t.name, :data => t.event_distribution(event)} }) %>;
     var m = [5, 40, 20, 5],
-        w = 480 - m[1] - m[3],
+        w = 380 - m[1] - m[3],
         h = 122 - m[0] - m[2];
 
     // Scales and axes. Note the inverted domain for the y-scale: bigger is up!

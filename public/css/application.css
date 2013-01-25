@@ -7,9 +7,22 @@ h1 {
 }
 
 .event .table {
-  width: 450px;
+  width: 550px;
 }
 
 .chart {
   float: right;
+}
+
+th.stat, td.stat {
+  width: 50px;
+  text-align: center;
+}
+
+.significant {
+  background-color: #9f9;
+}
+
+.significant.negative {
+  background-color: #f99;
 }
