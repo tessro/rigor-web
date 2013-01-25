@@ -109,9 +109,21 @@
         .x(function(d, i) { return x(i); })
         .y(function(d) { return y(d); });
 
-    // Compute the minimum and maximum date, and the maximum price.
-    x.domain([0, treatments[0].data.length]);
-    y.domain([0, d3.max(treatments[0].data)]).nice();
+    var xMax = 0, yMax = 0;
+    for (var i = 0; i < treatments.length; i++) {
+      if (treatments[i].data.length > xMax) {
+        xMax = treatments[i].data.length;
+      }
+
+      for (var j = 0; j < treatments[i].data.length; j++) {
+        if (treatments[i].data[j] > yMax) {
+          yMax = treatments[i].data[j];
+        }
+      }
+    }
+
+    x.domain([0, xMax]);
+    y.domain([0, yMax]).nice();
 
     // Add an SVG element with the desired dimensions and margin.
     var svg = d3.select(".chart").append("svg:svg")
